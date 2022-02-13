@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct item item;
 struct item
 {
   char filename[13];
