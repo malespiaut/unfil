@@ -13,7 +13,7 @@ struct item
 };
 
 void
-tidyup(struct item*** items, int itemcount)
+tidyup(struct item*** items, size_t itemcount)
 {
   for (size_t i = 0; i < itemcount; i++)
     {
@@ -22,7 +22,7 @@ tidyup(struct item*** items, int itemcount)
   free(*items);
 }
 
-int
+uint32_t
 analyse(const char* filename, struct item*** output)
 {
   // Set up FD
@@ -86,7 +86,7 @@ analyse(const char* filename, struct item*** output)
   return indexcount;
 }
 
-int
+void
 extract(const char* filename, char* destination)
 {
   FILE* src = fopen(filename, "rb");
@@ -94,11 +94,11 @@ extract(const char* filename, char* destination)
   if (!src)
     {
       printf("failed to open file for reading\n");
-      return 1;
+      exit(EXIT_FAILURE);
     }
 
   struct item** items = 0;
-  int itemc = 0;
+  uint32_t itemc = 0;
   if ((itemc = analyse(filename, &items)) > 0)
     {
       for (size_t i = 0; i < itemc - 1; i++)
@@ -113,7 +113,7 @@ extract(const char* filename, char* destination)
           if (!out)
             {
               printf("failed to open file for writing\n");
-              return 1;
+              exit(EXIT_FAILURE);
             }
 
           fseek(src, items[i]->offset, SEEK_SET);
@@ -129,8 +129,6 @@ extract(const char* filename, char* destination)
 
   tidyup(&items, itemc);
   fclose(src);
-
-  return 0;
 }
 
 void
@@ -142,8 +140,8 @@ usage(const char* path)
   printf("Use e for extract.\n\n");
 }
 
-int
-main(int argc, const char* argv[])
+int32_t
+main(int32_t argc, const char* argv[])
 {
   if (argc == 3)
     {
@@ -154,7 +152,7 @@ main(int argc, const char* argv[])
       else if (argv[1][0] == 'a')
         {
           struct item** items = 0;
-          int itemc = analyse(argv[2], &items);
+          uint32_t itemc = analyse(argv[2], &items);
           for (size_t i = 0; i < itemc - 1; i++)
             {
               printf("%s ", items[i]->filename);
