@@ -29,7 +29,7 @@ analyse(const char* filename, struct item*** output)
   FILE* fd;
   fd = fopen(filename, "rb");
 
-  if (fd == NULL)
+  if (!fd)
     {
       printf("failed to open file for reading\n");
       return -1;
@@ -97,7 +97,7 @@ extract(const char* filename, char* destination)
   FILE* src;
   src = fopen(filename, "rb");
 
-  if (src == NULL)
+  if (!src)
     {
       printf("failed to open file for reading\n");
       return 1;
@@ -118,7 +118,7 @@ extract(const char* filename, char* destination)
 
           FILE* out;
           out = fopen(outpath, "wb");
-          if (out == NULL)
+          if (!out)
             {
               printf("failed to open file for writing\n");
               return 1;
