@@ -30,8 +30,8 @@ analyse(const char* filename, struct item*** output)
 
   if (!fd)
     {
-      printf("failed to open file for reading\n");
-      return -1;
+      fputs("ERROR: Failed to open file for reading\n", stderr);
+      exit(EXIT_FAILURE);
     }
 
   // Read and decipher the indexcount
@@ -93,7 +93,7 @@ extract(const char* filename, char* destination)
 
   if (!src)
     {
-      printf("failed to open file for reading\n");
+      fputs("ERROR: Failed to open file for reading\n", stderr);
       exit(EXIT_FAILURE);
     }
 
@@ -112,7 +112,7 @@ extract(const char* filename, char* destination)
           FILE* out = fopen(outpath, "wb");
           if (!out)
             {
-              printf("failed to open file for writing\n");
+              fputs("ERROR: Failed to open file for writing\n", stderr);
               exit(EXIT_FAILURE);
             }
 
