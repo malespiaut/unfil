@@ -134,10 +134,11 @@ extract(const char* filename, char* destination)
 void
 usage(const char* path)
 {
-  printf("Usage: %s a|e /path/to/file.fil\n\n", path);
-  printf("CAUTION: This will extract the .fil to the current directory.\n");
-  printf("Use a for analyse.\n");
-  printf("Use e for extract.\n\n");
+  printf("Usage: %s [OPTION] [FILE]\n\n", path);
+  fputs("Options:\n", stdout);
+  fputs("  -l    list files without extracting them\n", stdout);
+  fputs("  -h    display this help and exit\n\n", stdout);
+  fputs("NOTE: this tool extracts the content of the FIL file in the current directory.\n", stdout);
 }
 
 int32_t
