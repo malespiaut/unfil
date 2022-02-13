@@ -15,7 +15,7 @@ struct item
 void
 tidyup(struct item*** items, int itemcount)
 {
-  for (int i = 0; i < itemcount; i++)
+  for (size_t i = 0; i < itemcount; i++)
     {
       free((*items)[i]);
     }
@@ -48,7 +48,7 @@ analyse(const char* filename, struct item*** output)
   // Decrypt the index
   uint8_t* index;
   index = malloc(indexcount * 17);
-  for (int b = 0; b < indexcount * 17; b++)
+  for (size_t b = 0; b < indexcount * 17; b++)
     {
       uint8_t tmp = indexe[b];
       tmp -= 39;
@@ -64,7 +64,7 @@ analyse(const char* filename, struct item*** output)
 
   //    indexcount times
   //
-  for (int i = 0; i < indexcount; i++)
+  for (size_t i = 0; i < indexcount; i++)
     {
       //    read 17 bytes from index[0+offset] in to temporary string
       //
@@ -79,7 +79,7 @@ analyse(const char* filename, struct item*** output)
 
   //    calculate the file lengths
   //
-  for (int i = 0; i < indexcount - 1; i++)
+  for (size_t i = 0; i < indexcount - 1; i++)
     {
       out_tmp[i]->len = out_tmp[i + 1]->offset - out_tmp[i]->offset - 1;
     }
@@ -107,7 +107,7 @@ extract(const char* filename, char* destination)
   int itemc = 0;
   if ((itemc = analyse(filename, &items)) > 0)
     {
-      for (int i = 0; i < itemc - 1; i++)
+      for (size_t i = 0; i < itemc - 1; i++)
         {
           printf("Extracting: %s\n", items[i]->filename);
           char* outpath;
@@ -165,7 +165,7 @@ main(int argc, const char* argv[])
           struct item** items;
           int itemc = 0;
           itemc = analyse(argv[2], &items);
-          for (int i = 0; i < itemc - 1; i++)
+          for (size_t i = 0; i < itemc - 1; i++)
             {
               printf("%s ", items[i]->filename);
               printf("%d\n", items[i]->len);
