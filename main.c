@@ -176,8 +176,7 @@ main(int32_t argc, const char* argv[])
           uint32_t itemc = analyse(argv[2], &items);
           for (size_t i = 0; i < itemc - 1; i++)
             {
-              printf("%s ", items[i]->filename);
-              printf("%d\n", items[i]->len);
+              printf("%*u %s\n", 8, items[i]->len, items[i]->filename);
             }
           tidyup(&items, itemc);
           return EXIT_SUCCESS;
