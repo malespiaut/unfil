@@ -1,19 +1,32 @@
-Extract constructor .fil files
+# unfil
 
-This is a simple piece of code implemented in C to extract
-.fil from the constructor game. This includes most of the 
-game videos and sounds.
+Polished fork of James Park-Watt's [constructor-fil](https://github.com/jimmypw/constructor-fil), who made it using the [game-file-format wiki](https://github.com/shlainn/game-file-formats/wiki/Constructor-.FIL-files).
 
-Caution: This tool will extract files to the current directory
+This tool extract the content of a FIL file in the current directory.
 
-To compile:
-make
+## Building
 
-To use for analysis
-./fil a /path/to/.fil
+This project makes use of [Michael Crawford's GenericMakefile](https://github.com/mbcrawfo/GenericMakefile), and is written in plain C. You only have to type `make` to build the projet.
 
-To use for extraction
-./fil e /path/to/.fil
+```
+$ make
+Creating directories
+Beginning release build
+Compiling: main.c -> build/release/main.o
+	 Compile time: 00:00:00
+Linking: bin/release/unfil
+	 Link time: 00:00:00
+Making symlink: unfil -> bin/release/unfil
+Total build time: 00:00:01
+```
 
+## Usage
 
-Many thanks to https://github.com/shlainn/game-file-formats/wiki/Constructor-.FIL-files for providing the file format
+```
+Usage: ./unfil [OPTION] [FILE]
+
+Options:
+  -l    list files without extracting them
+
+NOTE: this tool extracts the content of the FIL file in the current directory.
+```
