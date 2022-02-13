@@ -4,6 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+char* g_fil_path = 0;
+
+enum e_options
+{
+  OPTION_EXTRACT = 0,
+  OPTION_LIST = 'l'
+};
+typedef enum e_options e_options;
+
 typedef struct item item;
 struct item
 {
@@ -54,16 +63,13 @@ analyse(const char* filename, struct item*** output)
       index[b] = tmp;
     }
 
-  //    create array of items large enough to hold all indexed items
-  //
+  // create array of items large enough to hold all indexed items
   struct item** out_tmp = malloc(indexcount * sizeof(struct item*));
 
-  //    indexcount times
-  //
+  // indexcount times
   for (size_t i = 0; i < indexcount; i++)
     {
-      //    read 17 bytes from index[0+offset] in to temporary string
-      //
+      // read 17 bytes from index[0+offset] in to temporary string
       struct item* tmp_item = malloc(sizeof(struct item));
       uint8_t tmp[17] = {0};
       memcpy(tmp, &index[0 + (i * 17)], 17);
@@ -73,7 +79,6 @@ analyse(const char* filename, struct item*** output)
     }
 
   //    calculate the file lengths
-  //
   for (size_t i = 0; i < indexcount - 1; i++)
     {
       out_tmp[i]->len = out_tmp[i + 1]->offset - out_tmp[i]->offset - 1;
@@ -103,9 +108,7 @@ extract(const char* filename, char* destination)
     {
       for (size_t i = 0; i < itemc - 1; i++)
         {
-          printf("Extracting: %s\n", items[i]->filename);
-          char* outpath = malloc(255);
-          memset(outpath, 0, 255);
+          char outpath[255] = {0};
           sprintf(outpath, "%s/%s", destination, items[i]->filename);
           fflush(stdout);
 
@@ -121,7 +124,6 @@ extract(const char* filename, char* destination)
           fread(buffer, 1, items[i]->len, src);
           fwrite(buffer, 1, items[i]->len, out);
 
-          free(outpath);
           free(buffer);
           fclose(out);
         }
@@ -136,22 +138,40 @@ usage(const char* path)
 {
   printf("Usage: %s [OPTION] [FILE]\n\n", path);
   fputs("Options:\n", stdout);
-  fputs("  -l    list files without extracting them\n", stdout);
-  fputs("  -h    display this help and exit\n\n", stdout);
+  fputs("  -l    list files without extracting them\n\n", stdout);
   fputs("NOTE: this tool extracts the content of the FIL file in the current directory.\n", stdout);
+}
+
+e_options
+parse_arguments(int32_t argc, const char* argv[])
+{
+  e_options result = 0;
+  for (size_t i = 1; i < (size_t)argc; ++i)
+    {
+      if (argv[i][0] == '-')
+        {
+          result = argv[i][1];
+        }
+      else
+        {
+          g_fil_path = argv[i];
+        }
+    }
+  return result;
 }
 
 int32_t
 main(int32_t argc, const char* argv[])
 {
-  if (argc == 3)
+  if (argc == 2 || argc == 3)
     {
-      if (argv[1][0] == 'e')
+      e_options option = parse_arguments(argc, argv);
+      switch (option)
         {
-          extract(argv[2], "./");
-        }
-      else if (argv[1][0] == 'a')
-        {
+        case OPTION_EXTRACT:
+          extract(g_fil_path, "./");
+          return EXIT_SUCCESS;
+        case OPTION_LIST:
           struct item** items = 0;
           uint32_t itemc = analyse(argv[2], &items);
           for (size_t i = 0; i < itemc - 1; i++)
@@ -160,16 +180,12 @@ main(int32_t argc, const char* argv[])
               printf("%d\n", items[i]->len);
             }
           tidyup(&items, itemc);
-        }
-      else
-        {
-          printf("unrecognised action\n");
+          return EXIT_SUCCESS;
+        default:
+          usage(argv[0]);
         }
     }
-  else
-    {
-      usage(argv[0]);
-    }
+  usage(argv[0]);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
