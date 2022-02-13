@@ -26,8 +26,7 @@ int
 analyse(const char* filename, struct item*** output)
 {
   // Set up FD
-  FILE* fd;
-  fd = fopen(filename, "rb");
+  FILE* fd = fopen(filename, "rb");
 
   if (!fd)
     {
@@ -41,13 +40,11 @@ analyse(const char* filename, struct item*** output)
   indexcount ^= 0x3BD7A59A;
 
   // Read the enctypted index
-  uint8_t* indexe;
-  indexe = malloc(indexcount * 17);
+  uint8_t* indexe = malloc(indexcount * 17);
   fread(indexe, 17, indexcount, fd);
 
   // Decrypt the index
-  uint8_t* index;
-  index = malloc(indexcount * 17);
+  uint8_t* index = malloc(indexcount * 17);
   for (size_t b = 0; b < indexcount * 17; b++)
     {
       uint8_t tmp = indexe[b];
@@ -59,8 +56,7 @@ analyse(const char* filename, struct item*** output)
 
   //    create array of items large enough to hold all indexed items
   //
-  struct item** out_tmp;
-  out_tmp = malloc(indexcount * sizeof(struct item*));
+  struct item** out_tmp = malloc(indexcount * sizeof(struct item*));
 
   //    indexcount times
   //
@@ -68,9 +64,8 @@ analyse(const char* filename, struct item*** output)
     {
       //    read 17 bytes from index[0+offset] in to temporary string
       //
-      struct item* tmp_item;
-      tmp_item = malloc(sizeof(struct item));
-      uint8_t tmp[17];
+      struct item* tmp_item = malloc(sizeof(struct item));
+      uint8_t tmp[17] = {0};
       memcpy(tmp, &index[0 + (i * 17)], 17);
       memcpy(tmp_item->filename, &tmp[0], 13);
       memcpy(&tmp_item->offset, &tmp[13], 4);
@@ -94,8 +89,7 @@ analyse(const char* filename, struct item*** output)
 int
 extract(const char* filename, char* destination)
 {
-  FILE* src;
-  src = fopen(filename, "rb");
+  FILE* src = fopen(filename, "rb");
 
   if (!src)
     {
@@ -103,21 +97,19 @@ extract(const char* filename, char* destination)
       return 1;
     }
 
-  struct item** items;
+  struct item** items = 0;
   int itemc = 0;
   if ((itemc = analyse(filename, &items)) > 0)
     {
       for (size_t i = 0; i < itemc - 1; i++)
         {
           printf("Extracting: %s\n", items[i]->filename);
-          char* outpath;
-          outpath = malloc(255);
+          char* outpath = malloc(255);
           memset(outpath, 0, 255);
           sprintf(outpath, "%s/%s", destination, items[i]->filename);
           fflush(stdout);
 
-          FILE* out;
-          out = fopen(outpath, "wb");
+          FILE* out = fopen(outpath, "wb");
           if (!out)
             {
               printf("failed to open file for writing\n");
@@ -125,8 +117,7 @@ extract(const char* filename, char* destination)
             }
 
           fseek(src, items[i]->offset, SEEK_SET);
-          uint8_t* buffer;
-          buffer = malloc(items[i]->len);
+          uint8_t* buffer = malloc(items[i]->len);
           fread(buffer, 1, items[i]->len, src);
           fwrite(buffer, 1, items[i]->len, out);
 
@@ -162,9 +153,8 @@ main(int argc, const char* argv[])
         }
       else if (argv[1][0] == 'a')
         {
-          struct item** items;
-          int itemc = 0;
-          itemc = analyse(argv[2], &items);
+          struct item** items = 0;
+          int itemc = analyse(argv[2], &items);
           for (size_t i = 0; i < itemc - 1; i++)
             {
               printf("%s ", items[i]->filename);
