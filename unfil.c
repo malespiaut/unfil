@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char* g_fil_path;
+static const char* g_fil_path;
 
 enum e_options
 {
@@ -21,7 +21,7 @@ struct item
   uint32_t len;
 };
 
-void
+static void
 tidyup(item*** items, size_t itemcount)
 {
   for (size_t i = 0; i < itemcount; i++)
@@ -31,7 +31,7 @@ tidyup(item*** items, size_t itemcount)
   free(*items);
 }
 
-uint32_t
+static uint32_t
 analyse(const char* filename, item*** output)
 {
   // Set up FD
@@ -91,7 +91,7 @@ analyse(const char* filename, item*** output)
   return indexcount;
 }
 
-void
+static void
 extract(const char* filename, char* destination)
 {
   FILE* src = fopen(filename, "rb");
@@ -133,7 +133,7 @@ extract(const char* filename, char* destination)
   fclose(src);
 }
 
-void
+static void
 usage(const char* path)
 {
   printf("Usage: %s [OPTION] [FILE]\n\n", path);
@@ -142,7 +142,7 @@ usage(const char* path)
   fputs("NOTE: this tool extracts the content of the FIL file in the current directory.\n", stdout);
 }
 
-e_options
+static e_options
 parse_arguments(int32_t argc, const char* argv[])
 {
   e_options result = 0;
