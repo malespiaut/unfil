@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* g_fil_path = 0;
+const char* g_fil_path;
 
 enum e_options
 {
@@ -22,7 +22,7 @@ struct item
 };
 
 void
-tidyup(struct item*** items, size_t itemcount)
+tidyup(item*** items, size_t itemcount)
 {
   for (size_t i = 0; i < itemcount; i++)
     {
@@ -32,7 +32,7 @@ tidyup(struct item*** items, size_t itemcount)
 }
 
 uint32_t
-analyse(const char* filename, struct item*** output)
+analyse(const char* filename, item*** output)
 {
   // Set up FD
   FILE* fd = fopen(filename, "rb");
@@ -64,13 +64,13 @@ analyse(const char* filename, struct item*** output)
     }
 
   // create array of items large enough to hold all indexed items
-  struct item** out_tmp = malloc(indexcount * sizeof(struct item*));
+  item** out_tmp = malloc(indexcount * sizeof(item*));
 
   // indexcount times
   for (size_t i = 0; i < indexcount; i++)
     {
       // read 17 bytes from index[0+offset] in to temporary string
-      struct item* tmp_item = malloc(sizeof(struct item));
+      item* tmp_item = malloc(sizeof(item));
       uint8_t tmp[17] = {0};
       memcpy(tmp, &index[0 + (i * 17)], 17);
       memcpy(tmp_item->filename, &tmp[0], 13);
@@ -102,7 +102,7 @@ extract(const char* filename, char* destination)
       exit(EXIT_FAILURE);
     }
 
-  struct item** items = 0;
+  item** items = 0;
   uint32_t itemc = 0;
   if ((itemc = analyse(filename, &items)) > 0)
     {
@@ -165,6 +165,9 @@ main(int32_t argc, const char* argv[])
 {
   if (argc == 2 || argc == 3)
     {
+      item** items = 0;
+      uint32_t itemc = 0;
+
       e_options option = parse_arguments(argc, argv);
       switch (option)
         {
@@ -172,8 +175,7 @@ main(int32_t argc, const char* argv[])
           extract(g_fil_path, "./");
           return EXIT_SUCCESS;
         case OPTION_LIST:
-          struct item** items = 0;
-          uint32_t itemc = analyse(argv[2], &items);
+          itemc = analyse(argv[2], &items);
           for (size_t i = 0; i < itemc - 1; i++)
             {
               printf("%*u %s\n", 8, items[i]->len, items[i]->filename);
