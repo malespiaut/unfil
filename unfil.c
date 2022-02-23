@@ -49,11 +49,11 @@ analyse(const char* filename, item*** output)
   indexcount ^= 0x3BD7A59A;
 
   // Read the enctypted index
-  uint8_t* indexe = malloc(indexcount * 17);
+  uint8_t* indexe = calloc(indexcount * 17, sizeof(indexe));
   fread(indexe, 17, indexcount, fd);
 
   // Decrypt the index
-  uint8_t* index = malloc(indexcount * 17);
+  uint8_t* index = calloc(indexcount * 17, sizeof(index));
   for (size_t b = 0; b < indexcount * 17; b++)
     {
       uint8_t tmp = indexe[b];
@@ -64,13 +64,13 @@ analyse(const char* filename, item*** output)
     }
 
   // create array of items large enough to hold all indexed items
-  item** out_tmp = malloc(indexcount * sizeof(item*));
+  item** out_tmp = calloc(indexcount, sizeof(item*));
 
   // indexcount times
   for (size_t i = 0; i < indexcount; i++)
     {
       // read 17 bytes from index[0+offset] in to temporary string
-      item* tmp_item = malloc(sizeof(item));
+      item* tmp_item = calloc(1, sizeof(item));
       uint8_t tmp[17] = {0};
       memcpy(tmp, &index[0 + (i * 17)], 17);
       memcpy(tmp_item->filename, &tmp[0], 13);
@@ -120,7 +120,7 @@ extract(const char* filename, char* destination)
             }
 
           fseek(src, items[i]->offset, SEEK_SET);
-          uint8_t* buffer = malloc(items[i]->len);
+          uint8_t* buffer = calloc(items[i]->len, sizeof(buffer));
           fread(buffer, 1, items[i]->len, src);
           fwrite(buffer, 1, items[i]->len, out);
 
