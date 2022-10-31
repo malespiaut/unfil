@@ -10,7 +10,13 @@ SRC_PATH = .
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -Wall -Wextra -Wpedantic
+STD_FLAGS = -std=c2x
+
+WARNING_FLAGS_DEFAULT = -Wall -Wextra -Wpedantic -Wshadow
+WARNING_FLAGS_EXTRA = -Waggregate-return -Wcast-align=strict -Wcast-qual -Wfloat-equal -Wformat=2 -Wstrict-overflow=5 -Wstrict-prototypes -Wswitch-default -Wswitch-enum -Wundef -Wwrite-strings
+WARNING_FLAGS_ERROR = -Werror -Wfatal-errors
+
+COMPILE_FLAGS = $(STD_FLAGS) $(WARNING_FLAGS_DEFAULT) $(WARNING_FLAGS_EXTRA) $(WARNING_FLAGS_ERROR)
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG -Ofast -g0 -s
 # Additional debug-specific flags
